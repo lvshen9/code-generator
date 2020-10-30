@@ -1,9 +1,9 @@
 # generator-web
 
-> mybatis文件在线自动生成器-让机械无味的mybatis文件编写工作一去不返
+> mybatis文件自动生成器-让机械无味的mybatis文件编写工作一去不返
 > 随时随地 - 方便快捷
 
-厌倦了一成不变的mybatis文件的编写工作？快来使用这个在线工具吧！
+厌倦了一成不变的mybatis文件的编写工作？快来使用这个工具吧！
 填写正确的配置即可一秒生成`entity、mapper、service、controller`文件。既然要偷懒，就要做到极致。
 
 快来下载试用吧！
