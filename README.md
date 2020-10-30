@@ -55,8 +55,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * @Description  rmp3_return_replacement_apply:质量退换、商务退换申请表
- * @author   wujialv
+ * @Description  rmp3_return_replacement_apply
+ * @author   lvshen
  * @date   2020-10-30
  */
 @Table(name = "rmp3_return_replacement_apply")
@@ -81,14 +81,6 @@ public class ReturnReplacementApply extends RmpBaseEntity implements Serializabl
     private Date firstAuditedTime;
 
    ...
-
-    /**
-     * update_date:修改时间
-     */
-    @ApiModelProperty(value = "修改时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    @Column(name = "update_date")
-    private Date updateDate;
 
     /**
      * is_active:
@@ -124,25 +116,12 @@ public interface ReturnReplacementApplyMapper extends BaseMapper<ReturnReplaceme
     <result column="new_machine_material" jdbcType="VARCHAR" property="newMachineMaterial" />
     <result column="entry_method" jdbcType="VARCHAR" property="entryMethod" />
     <result column="return_replacement_annex" jdbcType="VARCHAR" property="returnReplacementAnnex" />
-    <result column="apply_status" jdbcType="VARCHAR" property="applyStatus" />
-    <result column="first_auditor" jdbcType="VARCHAR" property="firstAuditor" />
-    <result column="first_audited_time" jdbcType="TIMESTAMP" property="firstAuditedTime" />
-    <result column="first_audited_remark" jdbcType="VARCHAR" property="firstAuditedRemark" />
-    <result column="second_auditor" jdbcType="VARCHAR" property="secondAuditor" />
-    <result column="second_audited_time" jdbcType="TIMESTAMP" property="secondAuditedTime" />
-    <result column="second_audited_remark" jdbcType="VARCHAR" property="secondAuditedRemark" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
-    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
-    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
-    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
-    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
-    <result column="is_active" jdbcType="CHAR" property="isActive" />
+    
   </resultMap>
   <sql id="Base_Column_List">
     id, material_number, new_machine_material, entry_method, return_replacement_annex, 
     apply_status, first_auditor, first_audited_time, first_audited_remark, second_auditor, 
-    second_audited_time, second_audited_remark, type, create_by, create_date, update_by, 
-    update_date, is_active
+    second_audited_time
   </sql>
   ...
 ```
@@ -180,7 +159,7 @@ public class ReturnReplacementApplyServiceImpl extends BaseServiceImpl<ReturnRep
 @RestController
 @RequestMapping("/returnReplacementApply")
 @Api(tags = "ReturnReplacementApplyController", description = "ReturnReplacementApplyController")
-public class ReturnReplacementApplyController implements BaseController {
+public class ReturnReplacementApplyController extends BaseController {
     @Autowired
     private ReturnReplacementApplyService returnReplacementApplyService;
 
@@ -193,4 +172,4 @@ public class ReturnReplacementApplyController implements BaseController {
 
 以上代码都是工具自动生成的哦！
 
-> **Created by wujialv**
+> **Created by lvshen**

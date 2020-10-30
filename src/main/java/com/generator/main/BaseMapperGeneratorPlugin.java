@@ -27,6 +27,7 @@ public class BaseMapperGeneratorPlugin extends PluginAdapter {
     public boolean validate(List<String> warnings) {
         rootMapperInterface = properties.getProperty("rootMapperInterface");
         rootMapperInterface = stringHasValue(rootMapperInterface) ? rootMapperInterface : "";
+        Constant.mapData.put("rootMapperInterface",rootMapperInterface);
         return true;
     }
 

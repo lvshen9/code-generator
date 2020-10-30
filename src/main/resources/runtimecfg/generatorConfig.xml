@@ -18,7 +18,7 @@
 
 		<!--Mapper 配置父类接口-->
 		<plugin type="com.generator.main.BaseMapperGeneratorPlugin" >
-			<property name="rootMapperInterface" value="com.zoomlion.framework.base.mapper.BaseMapper" />
+			<property name="rootMapperInterface" value="${mybatis.rootMapperInterface}" />
 		</plugin>
 
 		<!--生成service，controller-->
@@ -30,11 +30,11 @@
 			<!--UserService,该值则为Service-->
 			<property name="serviceSuffix" value="Service"/>
 			<!--Service接口的父接口-->
-			<property name="superServiceInterface" value="com.zoomlion.framework.base.service.BaseService"/>
+			<property name="superServiceInterface" value="${mybatis.superServiceInterface}"/>
 			<!--ServiceImpl的父类-->
-			<property name="superServiceImpl" value="com.zoomlion.framework.base.service.impl.BaseServiceImpl"/>
+			<property name="superServiceImpl" value="${mybatis.superServiceImpl}"/>
 			<!--controller的父类接口-->
-			<property name="superController" value="com.zoomlion.basic.controller.BaseController"/>
+			<property name="superController" value="${mybatis.superController}"/>
 
 		</plugin>
 
@@ -73,8 +73,8 @@
 				targetProject="${targetProjectPath}">
 			<property name="enableSubPackages" value="true" />
 			<property name="trimStrings" value="false" />
-			<!--继承基类 com.zoomlion.rmp.entity.RmpBaseEntity-->
-			<property name="rootClass" value="com.zoomlion.rmp.entity.RmpBaseEntity"/>
+			<!--继承基类 com.xxx.rmp.entity.RmpBaseEntity-->
+			<property name="rootClass" value="${mybatis.rootModelInterface}"/>
 		</javaModelGenerator>
 		
 		<!-- 生成的映射文件包名和位置 -->

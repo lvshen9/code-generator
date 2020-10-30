@@ -198,7 +198,8 @@ public class ServiceAndControllerGeneratorPlugin extends PluginAdapter {
         Method method = new Method("getBaseMapper");
         //方法注解
         method.addAnnotation("@Override");
-        clazz.addImportedType(new FullyQualifiedJavaType("com.zoomlion.framework.base.mapper.BaseMapper"));
+        String rootMapperInterface = Constant.mapData.get("rootMapperInterface");
+        clazz.addImportedType(new FullyQualifiedJavaType(rootMapperInterface));
         String baseMapperStr = "BaseMapper" + "<" + modelName + ">";
         FullyQualifiedJavaType methodReturnType = new FullyQualifiedJavaType(baseMapperStr);
         //返回值
