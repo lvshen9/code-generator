@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+	<!-- 引入配置文件 -->
+	<properties resource="application.properties"/>
+
+  	<context id="MySQLTables" targetRuntime="MyBatis3">
+
+        <!--忽略getter/setter方法-->
+		<plugin type="com.generator.main.IgnoreSetterAndGetterPlugin" />
+
+		<!-- generate entity时，生成serialVersionUID -->
+		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+
+		<!--Mapper 配置父类接口-->
+		<plugin type="com.generator.main.BaseMapperGeneratorPlugin" >
+			<property name="rootMapperInterface" value="com.zoomlion.framework.base.mapper.BaseMapper" />
+		</plugin>
+
+		<!--生成service，controller-->
+		<plugin type="com.generator.main.ServiceAndControllerGeneratorPlugin" >
+			<property name="targetProject" value="${targetProjectPath}"/>
+			<property name="servicePackage" value="${mybatis.service}"/>
+			<property name="serviceImplPackage" value="${mybatis.serviceImpl}"/>
+			<property name="controllerPackage" value="${mybatis.controller}"/>
+			<!--UserService,该值则为Service-->
+			<property name="serviceSuffix" value="Service"/>
+			<!--Service接口的父接口-->
+			<property name="superServiceInterface" value="com.zoomlion.framework.base.service.BaseService"/>
+			<!--ServiceImpl的父类-->
+			<property name="superServiceImpl" value="com.zoomlion.framework.base.service.impl.BaseServiceImpl"/>
+			<!--controller的父类接口-->
+			<property name="superController" value="com.zoomlion.basic.controller.BaseController"/>
+
+		</plugin>
+
+        <!--Entity实体类注解配置-->
+		<commentGenerator type="com.generator.main.MyCommentGenerator">
+			<property name="author" value="${mybatis.author}"/>
+			<property name="allArgsConstructor" value="false"/>
+			<property name="noArgsConstructor" value="false"/>
+			<property name="toString" value="false"/>
+			<property name="builder.toBuilder" value="false"/>
+			<property name="builder" value="false"/>
+		</commentGenerator>
+
+		<!-- MySQL数据库链接URL、用户名、密码 -->
+		<jdbcConnection driverClass="${datasource.driver-class-name}"
+			connectionURL="${datasource.url}"
+			userId="${datasource.username}"
+			password="${datasource.password}">
+			<property name="useInformationSchema" value="true"  />
+		</jdbcConnection>
+
+		<!-- 是否去除自动生成的注释true:是 false:否 -->
+		<!--
+		<commentGenerator>
+			<property name="suppressAllComments" value="true" />
+		</commentGenerator>
+		-->
+
+	    <javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+	    </javaTypeResolver>
+		
+		<!-- 生成Entity模型的包名和位置 -->
+		<javaModelGenerator
+				targetPackage="${mybatis.entity}"
+				targetProject="${targetProjectPath}">
+			<property name="enableSubPackages" value="true" />
+			<property name="trimStrings" value="false" />
+			<!--继承基类 com.zoomlion.rmp.entity.RmpBaseEntity-->
+			<property name="rootClass" value="com.zoomlion.rmp.entity.RmpBaseEntity"/>
+		</javaModelGenerator>
+		
+		<!-- 生成的映射文件包名和位置 -->
+		<sqlMapGenerator
+				targetPackage="${mybatis.resources}"
+				targetProject="${targetProjectPath}">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>
+
+		<!-- 生成Mapper的包名和位置 -->
+		<javaClientGenerator type="XMLMAPPER"
+							 targetPackage="${mybatis.mapper}"
+							 targetProject="${targetProjectPath}">
+			<property name="enableSubPackages" value="true" />
+		</javaClientGenerator>
+
+		
+		<!-- 要生成那些表(更改tableName和domainObjectName就可以) -->
+	    <table tableName="${mybatis.table}" domainObjectName="${mybatis.classname}"
+			   enableCountByExample="false"
+	    	   enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" >
+			<!--字段命名为小驼峰-->
+			<property name="useActualColumnNames" value="false"/>
+		</table>
+
+  	</context>
+	
+</generatorConfiguration>
