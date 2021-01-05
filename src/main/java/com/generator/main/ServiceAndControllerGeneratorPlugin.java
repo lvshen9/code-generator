@@ -147,8 +147,45 @@ public class ServiceAndControllerGeneratorPlugin extends PluginAdapter {
             serviceInterface.addImportedType(new FullyQualifiedJavaType(recordType));
             serviceInterface.addSuperInterface(new FullyQualifiedJavaType(superServiceInterfaceName + "<" + modelName + ">"));
         }
+
+        //创建方法的 接口
+        methodForServiceCreate(serviceInterface, remarks);
+
+        //列表 接口
+        methodForServiceList(serviceInterface, remarks);
+
         GeneratedJavaFile gjf = new GeneratedJavaFile(serviceInterface, targetProject, context.getJavaFormatter());
         return gjf;
+    }
+
+    private void methodForServiceList(Interface serviceInterface, String remarks) {
+        String firstCharToLowCaseCreateParam = firstCharToLowCase(modelName);
+        FullyQualifiedJavaType methodReturnTypeForCreate = new FullyQualifiedJavaType(modelName);
+        FullyQualifiedJavaType fullyQualifiedJavaTypeList = new FullyQualifiedJavaType("List<" + modelName + ">");
+        Method listMethod = new Method("list" + modelName);
+        listMethod.addJavaDocLine("/**");
+        listMethod.addJavaDocLine("* 列表 " + remarks);
+        listMethod.addJavaDocLine("* @param  " + firstCharToLowCaseCreateParam);
+        listMethod.addJavaDocLine("* @return " + "list");
+        listMethod.addJavaDocLine("*/");
+        listMethod.addParameter(new Parameter(methodReturnTypeForCreate, firstCharToLowCaseCreateParam));
+        listMethod.setReturnType(fullyQualifiedJavaTypeList);
+        serviceInterface.addMethod(listMethod);
+    }
+
+    private void methodForServiceCreate(Interface serviceInterface, String remarks) {
+        String firstCharToLowCaseCreateParam = firstCharToLowCase(modelName);
+        FullyQualifiedJavaType methodReturnTypeForCreate = new FullyQualifiedJavaType(modelName);
+        FullyQualifiedJavaType fullyQualifiedJavaTypeInt = new FullyQualifiedJavaType("int");
+        Method createMethod = new Method("create" + modelName);
+        createMethod.addJavaDocLine("/**");
+        createMethod.addJavaDocLine("* 创建 " + remarks);
+        createMethod.addJavaDocLine("* @param  " + firstCharToLowCaseCreateParam);
+        createMethod.addJavaDocLine("* @return " + "入库成功数目");
+        createMethod.addJavaDocLine("*/");
+        createMethod.addParameter(new Parameter(methodReturnTypeForCreate, firstCharToLowCaseCreateParam));
+        createMethod.setReturnType(fullyQualifiedJavaTypeInt);
+        serviceInterface.addMethod(createMethod);
     }
 
     /**
@@ -220,10 +257,90 @@ public class ServiceAndControllerGeneratorPlugin extends PluginAdapter {
         method1.setVisibility(JavaVisibility.PUBLIC);
         clazz.addMethod(method1);
 
+        //生成创建方法
+        methodForServiceImplCreate(clazz, remarks);
+
+        //分页方法
+        methodForServiceImplPage(clazz, remarks);
+
+        //列表方法
+        methodForServiceImplList(clazz, remarks);
+
         GeneratedJavaFile gjf2 = new GeneratedJavaFile(clazz, targetProject, context.getJavaFormatter());
         return gjf2;
     }
 
+    private void methodForServiceImplList(TopLevelClass clazz, String remarks) {
+        Method listMethod = new Method("list" + modelName);
+        FullyQualifiedJavaType methodReturnTypeForPageParam = new FullyQualifiedJavaType(modelName);
+        String firstCharToLowCaseModelName = firstCharToLowCase(modelName);
+        FullyQualifiedJavaType fullyQualifiedJavaTypeReturnPage = new FullyQualifiedJavaType("List<" + modelName + ">");
+        listMethod.addJavaDocLine("/**");
+        listMethod.addJavaDocLine("* 列表 " + remarks);
+        listMethod.addJavaDocLine("* @param  " + firstCharToLowCaseModelName);
+        listMethod.addJavaDocLine("* @return list");
+        listMethod.addJavaDocLine("*/");
+        listMethod.addAnnotation("@Override");
+        listMethod.addParameter(new Parameter(methodReturnTypeForPageParam, firstCharToLowCaseModelName));
+        listMethod.setReturnType(fullyQualifiedJavaTypeReturnPage);
+        listMethod.addBodyLine(modelName + " " + firstCharToLowCaseModelName + " = new " + modelName + "();");
+        listMethod.addBodyLine("List<" + modelName + "> list = this.select(" + firstCharToLowCaseModelName + ");");
+        listMethod.addBodyLine("if (CollectionUtils.isEmpty(list)) {");
+        listMethod.addBodyLine("return ImmutableList.of();");
+        listMethod.addBodyLine("}");
+        listMethod.addBodyLine("return list;");
+        listMethod.setVisibility(JavaVisibility.PUBLIC);
+        clazz.addMethod(listMethod);
+    }
+
+    private void methodForServiceImplPage(TopLevelClass clazz, String remarks) {
+        clazz.addImportedType(new FullyQualifiedJavaType("com.github.pagehelper.PageInfo"));
+        clazz.addImportedType(new FullyQualifiedJavaType("java.util.List"));
+        clazz.addImportedType(new FullyQualifiedJavaType("org.apache.commons.collections4.CollectionUtils"));
+        clazz.addImportedType(new FullyQualifiedJavaType("com.google.common.collect.ImmutableList"));
+        clazz.addImportedType(new FullyQualifiedJavaType("com.xxx.basic.page.PageRequest"));
+        Method pageMethod = new Method("page" + modelName);
+        FullyQualifiedJavaType methodReturnTypeForPageParam = new FullyQualifiedJavaType("PageRequest");
+        String firstCharToLowCaseModelName = firstCharToLowCase(modelName);
+        FullyQualifiedJavaType fullyQualifiedJavaTypeReturnPage = new FullyQualifiedJavaType("PageInfo<" + modelName + ">");
+        pageMethod.addJavaDocLine("/**");
+        pageMethod.addJavaDocLine("* 分页 " + remarks);
+        pageMethod.addJavaDocLine("* @param  request");
+        pageMethod.addJavaDocLine("* @return 分页列表");
+        pageMethod.addJavaDocLine("*/");
+        pageMethod.addParameter(new Parameter(methodReturnTypeForPageParam, "request"));
+        pageMethod.setReturnType(fullyQualifiedJavaTypeReturnPage);
+        pageMethod.addBodyLine("request.initPage();");
+        pageMethod.addBodyLine("List<" + modelName + "> list = this.list" + modelName + "(" + firstCharToLowCaseModelName + ");");
+        pageMethod.addBodyLine("PageInfo<" + modelName + "> pageInfo = new PageInfo<>(list);");
+
+        pageMethod.addBodyLine("return pageInfo;");
+        pageMethod.setVisibility(JavaVisibility.PUBLIC);
+        clazz.addMethod(pageMethod);
+    }
+
+    private void methodForServiceImplCreate(TopLevelClass clazz, String remarks) {
+        clazz.addImportedType(new FullyQualifiedJavaType("org.springframework.transaction.annotation.Transactional"));
+        clazz.addImportedType(new FullyQualifiedJavaType("com.xxx.basic.framework.BusinessExceptionAssert"));
+
+        String firstCharToLowCaseCreateParam = firstCharToLowCase(modelName);
+        FullyQualifiedJavaType methodReturnTypeForCreate = new FullyQualifiedJavaType(modelName);
+        FullyQualifiedJavaType fullyQualifiedJavaTypeInt = new FullyQualifiedJavaType("int");
+        Method createMethod = new Method("create" + modelName);
+        createMethod.addJavaDocLine("/**");
+        createMethod.addJavaDocLine("* 创建 " + remarks);
+        createMethod.addJavaDocLine("* @param  " + firstCharToLowCaseCreateParam);
+        createMethod.addJavaDocLine("* @return " + "入库成功数目");
+        createMethod.addJavaDocLine("*/");
+        createMethod.addAnnotation("@Override");
+        createMethod.addParameter(new Parameter(methodReturnTypeForCreate, firstCharToLowCaseCreateParam));
+        createMethod.addAnnotation("@Transactional(rollbackFor = Exception.class)");
+        createMethod.setReturnType(fullyQualifiedJavaTypeInt);
+        createMethod.addBodyLine("BusinessExceptionAssert.checkNotNull(" + firstCharToLowCaseCreateParam + ", \"参数不能为空!!!\");");
+        createMethod.addBodyLine("return this.save(" + firstCharToLowCaseCreateParam + ");");
+        createMethod.setVisibility(JavaVisibility.PUBLIC);
+        clazz.addMethod(createMethod);
+    }
 
     /**
      * 生成controller类
@@ -293,8 +410,30 @@ public class ServiceAndControllerGeneratorPlugin extends PluginAdapter {
         clazz.addImportedType(superServiceInterface);
         clazz.addMethod(method);*/
 
+        //创建方法
+        methodForControllerCreate(remarks, clazz, serviceFieldName);
+
         GeneratedJavaFile gjf2 = new GeneratedJavaFile(clazz, targetProject, context.getJavaFormatter());
         return gjf2;
+    }
+
+    private void methodForControllerCreate(String remarks, TopLevelClass clazz, String serviceFieldName) {
+        String firstCharToLowCaseCreateParam = firstCharToLowCase(modelName);
+        FullyQualifiedJavaType methodReturnTypeForCreate = new FullyQualifiedJavaType(modelName);
+        FullyQualifiedJavaType fullyQualifiedJavaTypeResult = new FullyQualifiedJavaType("Result");
+        String createMethodStr = "create" + modelName;
+        Method createMethod = new Method(createMethodStr);
+
+        clazz.addImportedType(new FullyQualifiedJavaType("io.swagger.annotations.ApiOperation"));
+
+        createMethod.addAnnotation("@ApiOperation(value = \"" + remarks + "\", httpMethod = \"POST\")");
+        createMethod.addAnnotation("@PostMapping(value = \"" + createMethodStr + "\")");
+        createMethod.addParameter(new Parameter(methodReturnTypeForCreate, firstCharToLowCaseCreateParam));
+        createMethod.setReturnType(fullyQualifiedJavaTypeResult);
+        createMethod.addBodyLine(serviceFieldName + "." + createMethodStr + "(" + firstCharToLowCaseCreateParam + ");");
+        createMethod.addBodyLine("return success();");
+        createMethod.setVisibility(JavaVisibility.PUBLIC);
+        clazz.addMethod(createMethod);
     }
 
     private String firstCharToLowCase(String str) {
